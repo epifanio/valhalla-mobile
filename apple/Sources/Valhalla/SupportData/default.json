@@ -7,7 +7,6 @@
     "use_simple_mem_cache": false,
     "tile_dir": "/data/valhalla_tiles",
     "tile_extract": "/data/valhalla/tiles.tar",
-    "traffic_extract": "/data/valhalla/traffic.tar",
     "admin": "/data/valhalla_tiles/admins.sqlite",
     "landmarks": "/data/valhalla/landmarks.sqlite",
     "timezone": "/data/valhalla_tiles/timezones.sqlite",

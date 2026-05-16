@@ -2,6 +2,7 @@
 
 #import <include/main.h>
 #import <Foundation/Foundation.h>
+#import <cxxabi.h>
 
 /**
  * iOS implementation of ValhallaMobileHttpClient using NSMutableURLRequest
@@ -143,7 +144,30 @@ public:
         *error = [[NSError alloc] initWithDomain: [NSString stringWithUTF8String:err.what()] code:-1 userInfo: nil];
         return nil;
     } catch (...) {
-        *error = [[NSError alloc] initWithDomain: @"unknown exception" code:-1 userInfo: nil];
+        // Identify the thrown C++ type (works even across libc++ ABI boundaries).
+        const char* rawType = "unknown";
+        auto* ti = abi::__cxa_current_exception_type();
+        if (ti) rawType = ti->name();
+        int status = 0;
+        char* demangled = abi::__cxa_demangle(rawType, nullptr, nullptr, &status);
+        const char* typeCStr = (status == 0 && demangled) ? demangled : rawType;
+
+        // Try to extract the message via rethrow.
+        // If both sides share the same libc++ this will catch the std::exception and
+        // give us what(). If there is a hidden-visibility / dual-libc++ ABI split the
+        // inner catch will also fall through to its own (...) and what stays as-is.
+        std::string what = "(message unavailable - likely libc++ ABI split)";
+        try {
+            std::rethrow_exception(std::current_exception());
+        } catch (const std::runtime_error& e) { what = std::string("runtime_error: ") + e.what(); }
+          catch (const std::exception& e)      { what = std::string("exception: ")     + e.what(); }
+          catch (...)                          { /* stays as above */ }
+
+        NSLog(@"[ValhallaWrapper] catch(...) type=%s  what=%s", typeCStr, what.c_str());
+        if (demangled) free(demangled);
+
+        NSString* domain = [NSString stringWithFormat:@"[type: %s] %s", typeCStr, what.c_str()];
+        *error = [[NSError alloc] initWithDomain:domain code:-1 userInfo:nil];
         return nil;
     }
     return self;
