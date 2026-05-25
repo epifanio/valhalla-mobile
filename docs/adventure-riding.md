@@ -27,6 +27,40 @@ EdgeCost hot path when unset. Currently wired into `auto`, `motorcycle`,
 | `use_adventure_riding_curve` | 0.1 – 10.0 | 1.0 | Exponent on the bias. `effective = pow(use_adventure_riding, use_adventure_riding_curve)`. 1.0 = linear (legacy). 3 makes `bias=0.5` act like `bias≈0.125`. Useful because real OSM trail/road cost ratios are large enough that linear bias=0.5 leaves trail above road on most fixtures. |
 | `adventure_riding_speed_factor` | 0.3 – 3.0 | 1.0 | Rider-skill speed multiplier on adventure-riding edges. Scales the OSM-tagged speed at routing time, affecting BOTH the cost and the reported `trip.summary.time`. 0.5 = "I take trails at half the average rider's pace"; 1.5 = "expert, 1.5×". |
 
+## Recommended presets
+
+The three knobs aren't intuitive in isolation — the relationship between cost
+ratio and route choice is geometry-dependent. The presets below come from a
+5-fixture sweep on real Norway + Sweden TET data (commit log
+[`5b8c4ca0b…71d166d9f`](https://github.com/epifanio/valhalla/commits/feat/adventure-riding)
+in the Valhalla fork, server-validated 2026-05-26):
+
+| preset | `use_adventure_riding` | `use_adventure_riding_curve` | route behaviour |
+|---|---|---|---|
+| **Off** | unset (or `1.0`) | unset (or `1.0`) | Stock routing. Trail edges are neither preferred nor avoided beyond their `highway=track` defaults. |
+| **Light** | `0.5` | `3` | Trail wins when it's naturally convenient (similar length to the road alternative). Stays on the road for big detours. |
+| **Moderate** | `0.3` | `3` | "I want some trail today" — flips onto the trail on every fixture in the sweep, including 100+ km routes. |
+| **Strong** | `0.1` | `2` | Trail dominates the route choice whenever the trail is reachable from both endpoints. Use when the rider wants maximum off-road. |
+| **Trail-only** | `0.0` | `1` | Cost on trail edges drops to zero — the router prefers trail wherever there's a valid path. Legacy "binary" mode. |
+
+For `adventure_riding_speed_factor` (the rider-skill axis) the default `1.0`
+is calibrated assuming the augmentation pipeline's per-country `maxspeed`
+tag is realistic. Rider-side adjustments:
+
+| skill | meaning |
+|---|---|
+| `2.0` | Expert / racer pace on tracks |
+| `1.5` | Above-average — quick on grade2-3 |
+| `1.0` | **Default** — average tour rider at the tagged speed |
+| `0.7` | Cautious; technical terrain or heavier bike |
+| `0.5` | Beginner / loaded touring bike |
+
+Skill scales both wall-clock time and cost on trail edges, so the routing
+choice shifts too — a cautious rider may avoid a trail detour the average
+rider would take. Setting skill = `0.5` plus a Moderate preset is a useful
+way to bias *toward* trail while still accepting "this section is too rough
+for me" trade-offs.
+
 ## Calling from Swift
 
 The typed `RouteRequest` (from `valhalla-openapi-models-swift`) doesn't
