@@ -11,6 +11,16 @@ This project builds [valhalla](https://github.com/valhalla/valhalla) as a static
 It currently only exposes the route function for the primary purpose of generating turn by turn navigation routes
 using a downloaded pre-parsed valhalla tileset.
 
+**This fork** (`epifanio/valhalla-mobile`, branch `feat/adventure-riding-fork`)
+vendors [`epifanio/valhalla`](https://github.com/epifanio/valhalla) on branch
+`feat/adventure-riding` rather than upstream `valhalla/valhalla`. That branch
+adds three per-request costing options (`use_adventure_riding`,
+`use_adventure_riding_curve`, `adventure_riding_speed_factor`) that let
+adventure riders bias routes onto curated off-road networks (Trans Euro
+Trail etc.). All three are no-ops on stock-Valhalla tilesets. See
+[`docs/adventure-riding.md`](docs/adventure-riding.md) for the JSON request
+shape and tile-build requirements.
+
 We welcome contributions to expand the functionality of this library. See our [CONTRIBUTING.md](CONTRIBUTING.md)
 for more information.
 If you've got questions, would like to have informal discussions, or just want to ping us about a question, PR. Feel free 
