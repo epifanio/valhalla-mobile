@@ -35,8 +35,16 @@ private:
     std::unique_ptr<valhalla::baldr::GraphReader> graph_reader;
 public:
     ValhallaActor(const std::string& config_path, ValhallaMobileHttpClient* http_client = nullptr);
-    
+
     std::string route(const std::string& request);
+
+    /**
+     * Run Valhalla's Meili map-matcher on the supplied GPS trace and return
+     * a routed result (with maneuvers + edge info), the same shape that
+     * `/trace_route` produces on the HTTP service.  Request JSON shape is
+     * identical to the HTTP API.
+     */
+    std::string traceRoute(const std::string& request);
 };
 
 #endif // VALHALLAACTOR_H
