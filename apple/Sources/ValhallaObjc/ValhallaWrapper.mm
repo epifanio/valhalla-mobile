@@ -178,10 +178,19 @@ public:
     @synchronized(self) {
         // Convert the NSString to std::string
         std::string req = std::string([request UTF8String]);
-        
+
         // Generate the valhalla response
         std::string res = route(req.c_str(), _actor);
-        
+
+        return [NSString stringWithUTF8String:res.c_str()];
+    }
+}
+
+- (NSString*)traceRoute:(NSString*)request
+{
+    @synchronized(self) {
+        std::string req = std::string([request UTF8String]);
+        std::string res = trace_route(req.c_str(), _actor);
         return [NSString stringWithUTF8String:res.c_str()];
     }
 }
