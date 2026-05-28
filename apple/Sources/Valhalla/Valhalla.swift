@@ -59,4 +59,17 @@ public final class Valhalla: ValhallaProviding {
     public func route(rawRequest request: String) -> String {
         actor!.route(request)
     }
+
+    /**
+     * Run Valhalla's Meili map-matcher on the supplied GPS trace and
+     * return a routed result (maneuvers + edge info), matching the HTTP
+     * service's `/trace_route` endpoint.  The request body is the same
+     * JSON shape accepted by the HTTP API.
+     *
+     * Returns the raw JSON response.  Errors are reported in-band as
+     * `{"code": <int>, "message": "<text>"}`.
+     */
+    public func traceRoute(rawRequest request: String) -> String {
+        actor!.traceRoute(request)
+    }
 }
