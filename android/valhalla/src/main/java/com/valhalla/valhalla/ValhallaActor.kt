@@ -2,6 +2,8 @@ package com.valhalla.valhalla
 
 internal interface ValhallaActorProviding {
   fun route(request: String): String
+
+  fun traceRoute(request: String): String
 }
 
 /**
@@ -22,5 +24,16 @@ internal class ValhallaActor(private val configPath: String) : ValhallaActorProv
    */
   override fun route(request: String): String {
     return valhallaKotlin.route(request, configPath)
+  }
+
+  /**
+   * Run a trace_route (Meili map-matcher) request to the Valhalla routing engine. Same
+   * config/tiles assumptions as [route]. Available from the adventure-riding fork (0.8.0+).
+   *
+   * @param request
+   * @return
+   */
+  override fun traceRoute(request: String): String {
+    return valhallaKotlin.traceRoute(request, configPath)
   }
 }
