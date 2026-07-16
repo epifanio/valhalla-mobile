@@ -4,6 +4,10 @@ internal interface ValhallaActorProviding {
   fun route(request: String): String
 
   fun traceRoute(request: String): String
+
+  fun sourcesToTargets(request: String): String
+
+  fun optimizedRoute(request: String): String
 }
 
 /**
@@ -35,5 +39,28 @@ internal class ValhallaActor(private val configPath: String) : ValhallaActorProv
    */
   override fun traceRoute(request: String): String {
     return valhallaKotlin.traceRoute(request, configPath)
+  }
+
+  /**
+   * Run a sources_to_targets (time/distance matrix) request. Same config/tiles
+   * assumptions as [route]. Available from the adventure-riding fork (0.8.3+).
+   *
+   * @param request
+   * @return
+   */
+  override fun sourcesToTargets(request: String): String {
+    return valhallaKotlin.sourcesToTargets(request, configPath)
+  }
+
+  /**
+   * Run an optimized_route (traveling-salesman stop reordering) request. Same
+   * config/tiles assumptions as [route]. Available from the adventure-riding
+   * fork (0.8.3+).
+   *
+   * @param request
+   * @return
+   */
+  override fun optimizedRoute(request: String): String {
+    return valhallaKotlin.optimizedRoute(request, configPath)
   }
 }

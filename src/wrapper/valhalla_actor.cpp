@@ -81,3 +81,13 @@ std::string ValhallaActor::traceRoute(const std::string& request) {
     std::string req = std::string(request);
     return actor->trace_route(req);
 }
+
+std::string ValhallaActor::sourcesToTargets(const std::string& request) {
+    std::string req = std::string(request);
+    return actor->matrix(req);
+}
+
+std::string ValhallaActor::optimizedRoute(const std::string& request) {
+    std::string req = std::string(request);
+    return actor->optimized_route(req);
+}

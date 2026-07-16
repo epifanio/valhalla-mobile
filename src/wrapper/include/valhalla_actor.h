@@ -45,6 +45,22 @@ public:
      * identical to the HTTP API.
      */
     std::string traceRoute(const std::string& request);
+
+    /**
+     * Time/distance matrix (`sources_to_targets` action).  Request/response
+     * JSON shapes are identical to the HTTP `/sources_to_targets` endpoint.
+     */
+    std::string sourcesToTargets(const std::string& request);
+
+    /**
+     * Traveling-salesman stop reordering (`optimized_route` action): builds a
+     * cost matrix across the locations, solves the visiting order, and returns
+     * a normal trip whose `trip.locations[].original_index` gives the
+     * optimized order.  Same JSON shapes as the HTTP `/optimized_route`
+     * endpoint.  First and last locations stay fixed; only the middle is
+     * reordered.
+     */
+    std::string optimizedRoute(const std::string& request);
 };
 
 #endif // VALHALLAACTOR_H

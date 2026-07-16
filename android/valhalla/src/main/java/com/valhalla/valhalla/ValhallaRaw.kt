@@ -28,4 +28,16 @@ class ValhallaRaw(configPath: String) {
    * Available from the adventure-riding fork (0.8.0+).
    */
   fun traceRoute(rawRequest: String): String = actor.traceRoute(rawRequest)
+
+  /**
+   * Run a sources_to_targets (time/distance matrix) request. Raw Valhalla
+   * JSON in/out. Available from the adventure-riding fork (0.8.3+).
+   */
+  fun sourcesToTargets(rawRequest: String): String = actor.sourcesToTargets(rawRequest)
+
+  /**
+   * Run an optimized_route (traveling-salesman stop reordering) request.
+   * Raw Valhalla JSON in/out. Available from the adventure-riding fork (0.8.3+).
+   */
+  fun optimizedRoute(rawRequest: String): String = actor.optimizedRoute(rawRequest)
 }

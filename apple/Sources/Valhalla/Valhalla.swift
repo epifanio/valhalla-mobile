@@ -72,4 +72,29 @@ public final class Valhalla: ValhallaProviding {
     public func traceRoute(rawRequest request: String) -> String {
         actor!.traceRoute(request)
     }
+
+    /**
+     * Time/distance matrix (`sources_to_targets` action), matching the HTTP
+     * service's `/sources_to_targets` endpoint.  The request body is the
+     * same JSON shape accepted by the HTTP API.
+     *
+     * Returns the raw JSON response.  Errors are reported in-band as
+     * `{"code": <int>, "message": "<text>"}`.
+     */
+    public func sourcesToTargets(rawRequest request: String) -> String {
+        actor!.sourcesToTargets(request)
+    }
+
+    /**
+     * Traveling-salesman stop reordering (`optimized_route` action),
+     * matching the HTTP service's `/optimized_route` endpoint.  Valhalla
+     * fixes the first and last location and reorders only the middle; the
+     * optimized order is reported via `trip.locations[].original_index`.
+     *
+     * Returns the raw JSON response.  Errors are reported in-band as
+     * `{"code": <int>, "message": "<text>"}`.
+     */
+    public func optimizedRoute(rawRequest request: String) -> String {
+        actor!.optimizedRoute(request)
+    }
 }

@@ -21,6 +21,19 @@
  */
 - (NSString*)traceRoute:(NSString*)request;
 
+/**
+ * Time/distance matrix (`sources_to_targets` action), matching the HTTP
+ * service's `/sources_to_targets` endpoint shape.
+ */
+- (NSString*)sourcesToTargets:(NSString*)request;
+
+/**
+ * Traveling-salesman stop reordering (`optimized_route` action), matching
+ * the HTTP service's `/optimized_route` endpoint shape. The optimized order
+ * is reported via `trip.locations[].original_index`.
+ */
+- (NSString*)optimizedRoute:(NSString*)request;
+
 @end
 
 #endif /* ValhallaWrapperHeader_h */
