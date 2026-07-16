@@ -195,6 +195,24 @@ public:
     }
 }
 
+- (NSString*)sourcesToTargets:(NSString*)request
+{
+    @synchronized(self) {
+        std::string req = std::string([request UTF8String]);
+        std::string res = sources_to_targets(req.c_str(), _actor);
+        return [NSString stringWithUTF8String:res.c_str()];
+    }
+}
+
+- (NSString*)optimizedRoute:(NSString*)request
+{
+    @synchronized(self) {
+        std::string req = std::string([request UTF8String]);
+        std::string res = optimized_route(req.c_str(), _actor);
+        return [NSString stringWithUTF8String:res.c_str()];
+    }
+}
+
 - (void) dealloc
 {
     delete_valhalla_actor(_actor);
