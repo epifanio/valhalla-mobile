@@ -74,4 +74,37 @@ final class TestValhallaWithTar: XCTestCase {
         XCTAssertEqual(response.trip.statusMessage, "Found route between points")
         XCTAssertEqual(response.trip.legs.first?.shape.count, 656)
     }
+
+    /// Validate the 0.8.3 raw actions: optimized_route (traveling salesman)
+    /// and sources_to_targets (time/distance matrix) against the fixture graph.
+    func testOptimizedRouteAndMatrixRaw() throws {
+        let valhalla = try Valhalla(defaultConfig)
+
+        // Three stops around Andorra la Vella. Valhalla fixes the first and
+        // last location and reorders only the middle.
+        let request = """
+        {"locations":[{"lat":42.5063,"lon":1.5218},{"lat":42.5086,"lon":1.5394},{"lat":42.5069,"lon":1.5301}],"costing":"auto","directions_options":{"units":"kilometers"}}
+        """
+        let raw = valhalla.optimizedRoute(rawRequest: request)
+        let json = try JSONSerialization.jsonObject(with: raw.data(using: .utf8)!) as! [String: Any]
+        XCTAssertNil(json["error_code"], "optimized_route errored: \(raw.prefix(300))")
+        let trip = json["trip"] as! [String: Any]
+        let locations = trip["locations"] as! [[String: Any]]
+        XCTAssertEqual(locations.count, 3)
+        let order = locations.compactMap { $0["original_index"] as? Int }
+        XCTAssertEqual(order.sorted(), [0, 1, 2])   // every stop visited exactly once
+        XCTAssertEqual(order.first, 0)              // first location stays fixed
+        XCTAssertEqual(order.last, 2)               // last location stays fixed
+
+        let matrixRequest = """
+        {"sources":[{"lat":42.5063,"lon":1.5218}],"targets":[{"lat":42.5086,"lon":1.5394},{"lat":42.5069,"lon":1.5301}],"costing":"auto"}
+        """
+        let rawMatrix = valhalla.sourcesToTargets(rawRequest: matrixRequest)
+        let matrixJson = try JSONSerialization.jsonObject(with: rawMatrix.data(using: .utf8)!) as! [String: Any]
+        XCTAssertNil(matrixJson["error_code"], "sources_to_targets errored: \(rawMatrix.prefix(300))")
+        let table = matrixJson["sources_to_targets"] as! [[[String: Any]]]
+        XCTAssertEqual(table.count, 1)
+        XCTAssertEqual(table.first?.count, 2)
+        XCTAssertNotNil(table.first?.first?["distance"])
+    }
 }

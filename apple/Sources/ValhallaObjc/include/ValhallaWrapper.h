@@ -24,8 +24,11 @@
 /**
  * Time/distance matrix (`sources_to_targets` action), matching the HTTP
  * service's `/sources_to_targets` endpoint shape.
+ *
+ * NS_SWIFT_NAME keeps the Valhalla action name intact — Swift's automatic
+ * import would otherwise split it into `sources(toTargets:)`.
  */
-- (NSString*)sourcesToTargets:(NSString*)request;
+- (NSString*)sourcesToTargets:(NSString*)request NS_SWIFT_NAME(sourcesToTargets(_:));
 
 /**
  * Traveling-salesman stop reordering (`optimized_route` action), matching
