@@ -74,6 +74,19 @@ public final class Valhalla: ValhallaProviding {
     }
 
     /**
+     * Run the map-matcher and return per-edge attributes (`trace_attributes`
+     * action): edge ids, road class, names, lengths and — when baked into
+     * the tiles — `speed_limit`.  Matches the HTTP service's
+     * `/trace_attributes` endpoint; the request body is the same JSON shape.
+     *
+     * Returns the raw JSON response.  Errors are reported in-band as
+     * `{"code": <int>, "message": "<text>"}`.
+     */
+    public func traceAttributes(rawRequest request: String) -> String {
+        actor!.traceAttributes(request)
+    }
+
+    /**
      * Time/distance matrix (`sources_to_targets` action), matching the HTTP
      * service's `/sources_to_targets` endpoint.  The request body is the
      * same JSON shape accepted by the HTTP API.

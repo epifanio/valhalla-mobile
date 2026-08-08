@@ -5,6 +5,8 @@ internal interface ValhallaActorProviding {
 
   fun traceRoute(request: String): String
 
+  fun traceAttributes(request: String): String
+
   fun sourcesToTargets(request: String): String
 
   fun optimizedRoute(request: String): String
@@ -39,6 +41,18 @@ internal class ValhallaActor(private val configPath: String) : ValhallaActorProv
    */
   override fun traceRoute(request: String): String {
     return valhallaKotlin.traceRoute(request, configPath)
+  }
+
+  /**
+   * Run a trace_attributes (map-match + per-edge attributes, incl. speed_limit
+   * when baked into the tiles) request. Same config/tiles assumptions as
+   * [route]. Available from the adventure-riding fork (0.9.x unified cycle).
+   *
+   * @param request
+   * @return
+   */
+  override fun traceAttributes(request: String): String {
+    return valhallaKotlin.traceAttributes(request, configPath)
   }
 
   /**

@@ -30,6 +30,13 @@ class ValhallaRaw(configPath: String) {
   fun traceRoute(rawRequest: String): String = actor.traceRoute(rawRequest)
 
   /**
+   * Run a trace_attributes (map-match + per-edge attributes) request. Raw
+   * Valhalla JSON in/out. Available from the adventure-riding fork
+   * (unified iOS/Android cycle).
+   */
+  fun traceAttributes(rawRequest: String): String = actor.traceAttributes(rawRequest)
+
+  /**
    * Run a sources_to_targets (time/distance matrix) request. Raw Valhalla
    * JSON in/out. Available from the adventure-riding fork (0.8.3+).
    */
