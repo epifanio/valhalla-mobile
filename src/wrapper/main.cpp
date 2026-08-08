@@ -85,6 +85,43 @@ extern "C"
 JNIEXPORT jstring
 
 JNICALL
+Java_com_valhalla_valhalla_ValhallaKotlin_traceAttributes(JNIEnv *env,
+                                                          jobject thiz,
+                                                          jstring jRequest,
+                                                          jstring jConfigPath) {
+
+    const char *request = env->GetStringUTFChars(jRequest, 0);
+    const char *config_path = env->GetStringUTFChars(jConfigPath, 0);
+
+    std::string result;
+    try {
+        // TODO: Android currently creates a new actor every time. Optimize to be like iOS later.
+        ValhallaActor valhallaActor(config_path);
+        result = valhallaActor.traceAttributes(request);
+    } catch (const valhalla::valhalla_exception_t &err) {
+        printf("[ValhallaActor] trace_attributes valhalla_exception: %s\n", err.what());
+        std::string code = std::to_string(err.code);
+        std::string message = err.message.c_str();
+
+        result = "{\"code\":" + code + ",\"message\":\"" + message + "\"}";
+    } catch (const std::exception &err) {
+        printf("[ValhallaActor] trace_attributes std::exception: %s\n", err.what());
+        result = "{\"code\":-1,\"message\":\"" + std::string(err.what()) + "\"}";
+    } catch (...) {
+        printf("[ValhallaActor] trace_attributes unknown exception");
+        result = "{\"code\":-1,\"message\":\"unknown exception\"}";
+    }
+
+    env->ReleaseStringUTFChars(jRequest, request);
+    env->ReleaseStringUTFChars(jConfigPath, config_path);
+
+    return env->NewStringUTF(result.c_str());
+}
+
+extern "C"
+JNIEXPORT jstring
+
+JNICALL
 Java_com_valhalla_valhalla_ValhallaKotlin_sourcesToTargets(JNIEnv *env,
                                                            jobject thiz,
                                                            jstring jRequest,
@@ -200,6 +237,27 @@ std::string trace_route(const char *request, void* actor) {
         result = "{\"code\":-1,\"message\":\"" + std::string(err.what()) + "\"}";
     } catch (...) {
         printf("[ValhallaActor] trace_route unknown exception");
+        result = "{\"code\":-1,\"message\":\"unknown exception\"}";
+    }
+
+    return result;
+}
+
+std::string trace_attributes(const char *request, void* actor) {
+    std::string result;
+    try {
+        result = ((ValhallaActor*) actor)->traceAttributes(request);
+    } catch (const valhalla::valhalla_exception_t &err) {
+        printf("[ValhallaActor] trace_attributes valhalla_exception: %s\n", err.what());
+        std::string code = std::to_string(err.code);
+        std::string message = err.message.c_str();
+
+        result = "{\"code\":" + code + ",\"message\":\"" + message + "\"}";
+    } catch (const std::exception &err) {
+        printf("[ValhallaActor] trace_attributes std::exception: %s\n", err.what());
+        result = "{\"code\":-1,\"message\":\"" + std::string(err.what()) + "\"}";
+    } catch (...) {
+        printf("[ValhallaActor] trace_attributes unknown exception");
         result = "{\"code\":-1,\"message\":\"unknown exception\"}";
     }
 

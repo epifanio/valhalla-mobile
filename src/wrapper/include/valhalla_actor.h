@@ -47,6 +47,16 @@ public:
     std::string traceRoute(const std::string& request);
 
     /**
+     * Run the map-matcher and return per-edge attributes (`trace_attributes`
+     * action): edge ids, road class, names, lengths and — when present in
+     * the tiles — `speed_limit`.  Same request/response JSON shapes as the
+     * HTTP `/trace_attributes` endpoint.  This is what powers the offline
+     * speed-limit profile: match a computed route's shape, then fold the
+     * matched edges into a distance→limit profile client-side.
+     */
+    std::string traceAttributes(const std::string& request);
+
+    /**
      * Time/distance matrix (`sources_to_targets` action).  Request/response
      * JSON shapes are identical to the HTTP `/sources_to_targets` endpoint.
      */

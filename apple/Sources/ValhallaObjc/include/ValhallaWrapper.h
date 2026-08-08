@@ -22,6 +22,13 @@
 - (NSString*)traceRoute:(NSString*)request;
 
 /**
+ * Run the map-matcher and return per-edge attributes (edge ids, road class,
+ * names, lengths, `speed_limit` when baked into the tiles), matching the
+ * HTTP service's `/trace_attributes` endpoint shape.
+ */
+- (NSString*)traceAttributes:(NSString*)request;
+
+/**
  * Time/distance matrix (`sources_to_targets` action), matching the HTTP
  * service's `/sources_to_targets` endpoint shape.
  *
