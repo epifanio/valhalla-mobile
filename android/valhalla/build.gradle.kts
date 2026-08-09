@@ -84,7 +84,10 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
 }
 
-val archs = listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+// 0.10.0 ABI set (owner decision, 2026-08-09): arm64-v8a (modern phones +
+// Apple-Silicon emulators), armeabi-v7a (32-bit Android head units, e.g.
+// Carpuride direct installs), x86_64 (Intel emulators/CI). 32-bit x86 dropped.
+val archs = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
 
 // Define a custom task to run the shell script
 archs.forEach { arch ->
@@ -109,7 +112,6 @@ tasks.named("preBuild") {
     dependsOn("buildValhallaFor-arm64-v8a")
     dependsOn("buildValhallaFor-armeabi-v7a")
     dependsOn("buildValhallaFor-x86_64")
-    dependsOn("buildValhallaFor-x86")
 }
 
 mavenPublishing {
