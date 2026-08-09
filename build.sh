@@ -61,6 +61,9 @@ fi
 platform=""
 arch=""
 clean=false
+# Must be initialized: `if $clean_all` with an unset var expands to an empty
+# command (exit 0 = true) and silently `rm -rf build` on EVERY invocation.
+clean_all=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
