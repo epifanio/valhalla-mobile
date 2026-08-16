@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <stdexcept>
+#include <new>
 
 namespace {
 
@@ -75,8 +77,28 @@ std::string current_exception_type() {
  *  alone rather than losing the error entirely.
  */
 std::string current_exception_message() {
+    // Ladder from concrete to abstract. `catch (const std::exception &)` alone
+    // is not enough: RTTI identity is per-image on Apple, and the failure we
+    // chased reported its type as exactly "std::out_of_range" while STILL
+    // refusing to match std::exception — i.e. the mismatch is in the base-class
+    // walk, not in the type itself. Catching the concrete types first sidesteps
+    // that walk entirely, which is what recovers what().
     try {
         throw;
+    } catch (const std::out_of_range &e) {
+        return e.what() ? e.what() : "";
+    } catch (const std::length_error &e) {
+        return e.what() ? e.what() : "";
+    } catch (const std::invalid_argument &e) {
+        return e.what() ? e.what() : "";
+    } catch (const std::logic_error &e) {
+        return e.what() ? e.what() : "";
+    } catch (const std::range_error &e) {
+        return e.what() ? e.what() : "";
+    } catch (const std::runtime_error &e) {
+        return e.what() ? e.what() : "";
+    } catch (const std::bad_alloc &e) {
+        return e.what() ? e.what() : "";
     } catch (const std::exception &e) {
         return e.what() ? e.what() : "";
     } catch (...) {
