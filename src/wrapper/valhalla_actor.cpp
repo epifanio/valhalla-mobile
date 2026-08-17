@@ -59,9 +59,28 @@ std::string config_file(config_path);
     rapidjson::read_json(config_file, config);
 
     auto mjolnir_config = config.get_child("mjolnir");
+    // Only install a tile getter when the config actually has a tile_url to
+    // fetch from (Mode B, on-demand tiles). With local-only tiles (Mode A,
+    // empty tile_url) a getter must NOT be installed: GraphReader would treat
+    // every tile missing from the pack as remotely fetchable and build a URL
+    // from the empty tile_url — make_single_point_url("") does
+    // substr(npos + pattern.size()) which throws std::out_of_range
+    // ("basic_string"), killing the whole request instead of degrading to
+    // "no route". Upstream GraphReader only self-creates a getter when
+    // tile_url is non-empty; mirror that invariant here.
+    const auto tile_url = mjolnir_config.get<std::string>("tile_url", "");
+    std::unique_ptr<valhalla::baldr::tile_getter_t> tile_getter;
+    if (!tile_url.empty()) {
+      tile_getter =
+        std::make_unique<TileGetterWrapper>(http_client, mjolnir_config.get<bool>("tile_url_gz", false));
+    } else {
+      // TileGetterWrapper takes ownership of http_client (deletes it in its
+      // destructor); when we skip the wrapper we must free it ourselves.
+      delete http_client;
+    }
     graph_reader = std::make_unique<valhalla::baldr::GraphReader>(
-      mjolnir_config, 
-      std::make_unique<TileGetterWrapper>(http_client, mjolnir_config.get<bool>("tile_url_gz", false))
+      mjolnir_config,
+      std::move(tile_getter)
     );
     // Setup the actor
     actor = std::make_unique<valhalla::tyr::actor_t>(config, *graph_reader, true);
