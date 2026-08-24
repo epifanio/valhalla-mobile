@@ -119,6 +119,26 @@ The numeric ids correspond to `baldr::AdventureRidingClass` in
 ignores `source=*` and no edges get the tag — the request fields then
 silently no-op.
 
+## The dirt-first axis (`use_dirt_first`, 0.11.0+)
+
+A fourth option, independent of the three above: **route on unpaved
+surfaces, tarmac only as a connector**. Unlike the adventure-riding trio it
+keys on the per-edge `Surface` field every tile already carries — **it works
+on stock tiles, no augmented rebuild needed**, including every offline pack
+already on devices.
+
+| option | range | default | effect |
+|---|---|---|---|
+| `use_dirt_first` | 0.0 – 1.0 | 0.0 (off) | Strength of the paved/unpaved preference inversion. At 1.0 paved edges cost ~6x, gravel/dirt ~0.3x, and motor profiles floor unpaved edge speeds (30 km/h dirt/gravel, 15 path) so 2 km/h default-speed tracks become routable with honest ETAs. Out-of-range snaps to off. |
+
+Always send the companions — without them stock track-avoidance suppresses
+the flip: `use_tracks: 1.0` (all costings) and `use_trails: 1.0`
+(motorcycle). Calibrated presets (NO+SE fixtures, 2026-08-24): Light 0.35,
+Moderate 0.6, Strong 1.0. Composes multiplicatively with
+`use_adventure_riding` — "ride the TET, dirt-first" gets both discounts.
+Details: [`docs/adventure-riding/DIRT_FIRST.md`](https://github.com/epifanio/valhalla/blob/feat/adventure-riding/docs/adventure-riding/DIRT_FIRST.md)
+in the fork.
+
 ## Reference
 
 - Plan + implementation details (six layers + three-axis API):
