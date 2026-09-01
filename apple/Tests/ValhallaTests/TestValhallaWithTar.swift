@@ -107,4 +107,38 @@ final class TestValhallaWithTar: XCTestCase {
         XCTAssertEqual(table.first?.count, 2)
         XCTAssertNotNil(table.first?.first?["distance"])
     }
+
+    /// Validate the 0.11.3 raw action: locate (graph-edge correlation)
+    /// against the fixture graph. The response is a JSON array with one
+    /// entry per input location — not a `trip`.
+    func testLocateRaw() throws {
+        let valhalla = try Valhalla(defaultConfig)
+
+        // A point on a known road in the Andorra fixture graph.
+        let request = """
+        {"locations":[{"lat":42.5063,"lon":1.5218}],"costing":"auto","verbose":true}
+        """
+        let raw = valhalla.locate(rawRequest: request)
+        let json = try JSONSerialization.jsonObject(with: raw.data(using: .utf8)!)
+        let results = json as! [[String: Any]]
+        XCTAssertEqual(results.count, 1)
+        let edges = results.first?["edges"] as? [[String: Any]] ?? []
+        XCTAssertFalse(edges.isEmpty, "expected correlated edges on a road point: \(raw.prefix(300))")
+        let firstEdge = edges.first!
+        XCTAssertNotNil(firstEdge["correlated_lat"])
+        XCTAssertNotNil(firstEdge["percent_along"])
+        XCTAssertNotNil((firstEdge["edge_info"] as? [String: Any])?["way_id"])
+
+        // A point far from any edge in the fixture graph must yield a
+        // well-formed empty answer, not an error and not a crash.
+        let offGraphRequest = """
+        {"locations":[{"lat":45.843812,"lon":-123.768205}],"costing":"auto"}
+        """
+        let rawOff = valhalla.locate(rawRequest: offGraphRequest)
+        let offJson = try JSONSerialization.jsonObject(with: rawOff.data(using: .utf8)!)
+        let offResults = offJson as! [[String: Any]]
+        XCTAssertEqual(offResults.count, 1)
+        XCTAssertEqual((offResults.first?["edges"] as? [[String: Any]])?.count, 0)
+        XCTAssertEqual((offResults.first?["nodes"] as? [[String: Any]])?.count, 0)
+    }
 }

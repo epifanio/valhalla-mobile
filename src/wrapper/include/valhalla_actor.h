@@ -71,6 +71,17 @@ public:
      * reordered.
      */
     std::string optimizedRoute(const std::string& request);
+
+    /**
+     * Graph-edge correlation (`locate` action): answers "which edges/nodes is
+     * this point on?" for each input location — correlated lat/lon, heading,
+     * `percent_along`, and (with `"verbose":true`) full `edge_info` including
+     * names and way id.  A point far from any edge yields empty `edges` /
+     * `nodes` arrays, not an error.  Same JSON shapes as the HTTP `/locate`
+     * endpoint.  Cheap single-point query — unlike the Meili map-matcher
+     * (`traceRoute`), it is suitable for per-fix use during navigation.
+     */
+    std::string locate(const std::string& request);
 };
 
 #endif // VALHALLAACTOR_H

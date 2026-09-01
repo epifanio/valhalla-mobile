@@ -16,4 +16,6 @@ internal class ValhallaKotlin {
   external fun sourcesToTargets(request: String, configPath: String): String
 
   external fun optimizedRoute(request: String, configPath: String): String
+
+  external fun locate(request: String, configPath: String): String
 }

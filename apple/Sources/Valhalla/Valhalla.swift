@@ -110,4 +110,20 @@ public final class Valhalla: ValhallaProviding {
     public func optimizedRoute(rawRequest request: String) -> String {
         actor!.optimizedRoute(request)
     }
+
+    /**
+     * Graph-edge correlation (`locate` action), matching the HTTP service's
+     * `/locate` endpoint.  Per input location it returns the correlated
+     * edges/nodes with heading, `percent_along`, and — with
+     * `"verbose": true` — full `edge_info` (names, way id).  A point far
+     * from any edge yields empty `edges`/`nodes` arrays, not an error.
+     * Cheap single-point query, suitable for per-fix use during navigation
+     * (unlike the Meili map-matcher behind `traceRoute`).
+     *
+     * Returns the raw JSON response.  Errors are reported in-band as
+     * `{"code": <int>, "message": "<text>"}`.
+     */
+    public func locate(rawRequest request: String) -> String {
+        actor!.locate(request)
+    }
 }
