@@ -47,4 +47,11 @@ class ValhallaRaw(configPath: String) {
    * Raw Valhalla JSON in/out. Available from the adventure-riding fork (0.8.3+).
    */
   fun optimizedRoute(rawRequest: String): String = actor.optimizedRoute(rawRequest)
+
+  /**
+   * Run a locate (graph-edge correlation) request: which edges/nodes is each
+   * input point on, with heading and percent_along. Raw Valhalla JSON in/out.
+   * Available from the adventure-riding fork (0.11.3+).
+   */
+  fun locate(rawRequest: String): String = actor.locate(rawRequest)
 }

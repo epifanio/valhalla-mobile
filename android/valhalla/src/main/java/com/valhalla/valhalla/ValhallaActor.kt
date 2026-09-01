@@ -10,6 +10,8 @@ internal interface ValhallaActorProviding {
   fun sourcesToTargets(request: String): String
 
   fun optimizedRoute(request: String): String
+
+  fun locate(request: String): String
 }
 
 /**
@@ -76,5 +78,17 @@ internal class ValhallaActor(private val configPath: String) : ValhallaActorProv
    */
   override fun optimizedRoute(request: String): String {
     return valhallaKotlin.optimizedRoute(request, configPath)
+  }
+
+  /**
+   * Run a locate (graph-edge correlation) request: which edges/nodes is each
+   * input point on, with heading and percent_along. Same config/tiles
+   * assumptions as [route]. Available from the adventure-riding fork (0.11.3+).
+   *
+   * @param request
+   * @return
+   */
+  override fun locate(request: String): String {
+    return valhallaKotlin.locate(request, configPath)
   }
 }

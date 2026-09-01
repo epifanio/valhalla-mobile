@@ -302,6 +302,42 @@ Java_com_valhalla_valhalla_ValhallaKotlin_optimizedRoute(JNIEnv *env,
     return env->NewStringUTF(result.c_str());
 }
 
+extern "C"
+JNIEXPORT jstring
+
+JNICALL
+Java_com_valhalla_valhalla_ValhallaKotlin_locate(JNIEnv *env,
+                                                 jobject thiz,
+                                                 jstring jRequest,
+                                                 jstring jConfigPath) {
+
+    const char *request = env->GetStringUTFChars(jRequest, 0);
+    const char *config_path = env->GetStringUTFChars(jConfigPath, 0);
+
+    std::string result;
+    try {
+        // TODO: Android currently creates a new actor every time. Optimize to be like iOS later.
+        ValhallaActor valhallaActor(config_path);
+        result = valhallaActor.locate(request);
+    } catch (const valhalla::valhalla_exception_t &err) {
+        printf("[ValhallaActor] locate valhalla_exception: %s\n", err.what());
+        std::string code = std::to_string(err.code);
+        std::string message = err.message.c_str();
+
+        result = "{\"code\":" + code + ",\"message\":\"" + json_escape(message) + "\"}";
+    } catch (const std::exception &err) {
+        printf("[ValhallaActor] locate std::exception: %s\n", err.what());
+        result = "{\"code\":-1,\"message\":\"" + json_escape(std::string(err.what())) + "\"}";
+    } catch (...) {
+        result = unknown_exception_json("locate");
+    }
+
+    env->ReleaseStringUTFChars(jRequest, request);
+    env->ReleaseStringUTFChars(jConfigPath, config_path);
+
+    return env->NewStringUTF(result.c_str());
+}
+
 #elif __APPLE__
 void* create_valhalla_actor(const char *config_path, ValhallaMobileHttpClient* http_client) {
     return new ValhallaActor(config_path, http_client);
@@ -406,6 +442,26 @@ std::string optimized_route(const char *request, void* actor) {
         result = "{\"code\":-1,\"message\":\"" + json_escape(std::string(err.what())) + "\"}";
     } catch (...) {
         result = unknown_exception_json("optimized_route");
+    }
+
+    return result;
+}
+
+std::string locate(const char *request, void* actor) {
+    std::string result;
+    try {
+        result = ((ValhallaActor*) actor)->locate(request);
+    } catch (const valhalla::valhalla_exception_t &err) {
+        printf("[ValhallaActor] locate valhalla_exception: %s\n", err.what());
+        std::string code = std::to_string(err.code);
+        std::string message = err.message.c_str();
+
+        result = "{\"code\":" + code + ",\"message\":\"" + json_escape(message) + "\"}";
+    } catch (const std::exception &err) {
+        printf("[ValhallaActor] locate std::exception: %s\n", err.what());
+        result = "{\"code\":-1,\"message\":\"" + json_escape(std::string(err.what())) + "\"}";
+    } catch (...) {
+        result = unknown_exception_json("locate");
     }
 
     return result;

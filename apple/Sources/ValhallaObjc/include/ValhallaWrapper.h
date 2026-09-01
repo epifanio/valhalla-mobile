@@ -44,6 +44,14 @@
  */
 - (NSString*)optimizedRoute:(NSString*)request;
 
+/**
+ * Graph-edge correlation (`locate` action), matching the HTTP service's
+ * `/locate` endpoint shape: per input location, the correlated edges/nodes
+ * with heading, `percent_along`, and (verbose) full `edge_info`. A point far
+ * from any edge yields empty `edges`/`nodes` arrays, not an error.
+ */
+- (NSString*)locate:(NSString*)request;
+
 @end
 
 #endif /* ValhallaWrapperHeader_h */

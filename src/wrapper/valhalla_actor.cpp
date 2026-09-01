@@ -115,3 +115,8 @@ std::string ValhallaActor::optimizedRoute(const std::string& request) {
     std::string req = std::string(request);
     return actor->optimized_route(req);
 }
+
+std::string ValhallaActor::locate(const std::string& request) {
+    std::string req = std::string(request);
+    return actor->locate(req);
+}
