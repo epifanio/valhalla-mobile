@@ -139,6 +139,27 @@ Moderate 0.6, Strong 1.0. Composes multiplicatively with
 Details: [`docs/adventure-riding/DIRT_FIRST.md`](https://github.com/epifanio/valhalla/blob/feat/adventure-riding/docs/adventure-riding/DIRT_FIRST.md)
 in the fork.
 
+## Access-ban lifts (`lift_*`, next release)
+
+Three more options, all `false` by default (with all three off the engine
+answers exactly as before). They are for the enhance of a rider's own
+imported track, at the rider's explicit risk, and are never used for route
+seeking. Unlike `ignore_access`, they never lift every restriction at once.
+
+| option | lifts |
+|---|---|
+| `lift_motor_access_bans` | An edge closed to the vehicle by its access mask (an OSM ban such as `motor_vehicle=no`, a path, footway, cycleway or bridleway, or a country default baked into the tiles), when it is not destination-only, another mode may use it, and it is not steps, an elevator, a platform, a ferry, construction or transit. |
+| `lift_private_access` | Together with the first option, also destination-only edges (`access=private`, `access=destination`). |
+| `lift_node_access_bans` | Gates closed to the vehicle. Bollards stay closed. |
+
+FastGIS levels: **b** = `lift_motor_access_bans`; **c** = all three. Details:
+[`docs/adventure-riding/ACCESS_LIFT.md`](https://github.com/epifanio/valhalla/blob/release/df9/docs/adventure-riding/ACCESS_LIFT.md)
+in the fork.
+
+The same engine line also carries `avoid_national_default_tracks` (default
+`false`): in Norway and Denmark, `true` avoids the untagged tracks that the
+tile builder now opens.
+
 ## Reference
 
 - Plan + implementation details (six layers + three-axis API):
