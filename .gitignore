@@ -14,7 +14,9 @@
 local.properties
 
 .vscode
-.claude
+.claude/*
+# shared, tracked: Claude Code attribution off (CLAUDE.md -> Commit identity)
+!.claude/settings.json
 .zed
 
 # Swift PM
